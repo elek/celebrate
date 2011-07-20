@@ -1,0 +1,16 @@
+repositories {
+    mavenCentral()
+}
+
+buildscript {
+  repositories {
+    mavenRepo(urls: 'http://jvoegele.com/maven2/')
+  }
+  dependencies {
+    classpath 'com.jvoegele.gradle.plugins:android-plugin:0.9.9'
+  }
+}
+
+apply plugin: 'android'
+
+
