@@ -4,9 +4,6 @@ import static net.anzix.android.celebrate.EventHelper.DATABASE_TABLE;
 import static net.anzix.android.celebrate.EventHelper.KEY_DATE;
 import static net.anzix.android.celebrate.EventHelper.KEY_NAME;
 import static net.anzix.android.celebrate.EventHelper.KEY_ROWID;
-
-import java.util.Date;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;

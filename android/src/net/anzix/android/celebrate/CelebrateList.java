@@ -3,7 +3,6 @@ package net.anzix.android.celebrate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +25,7 @@ import android.widget.SimpleAdapter;
 public class CelebrateList extends ListActivity {
 	private static final int EVENT_LIST = 0;
 	private static final int ACTIVITY_EDIT = 0;
+	private static final int TEST_NOTIFY = 1;
 	List<Event> list = new ArrayList<Event>();
 	private List<Celebrate> feasts = new ArrayList<Celebrate>();
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -36,9 +36,9 @@ public class CelebrateList extends ListActivity {
 	}
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-
+	protected void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
+		//SchedulingUtil.schendule(this);
 		setContentView(R.layout.celebrate_list);
 		db = new EventAdapter(this);
 		db.open();
@@ -51,8 +51,7 @@ public class CelebrateList extends ListActivity {
 		list.clear();
 		if (c.moveToFirst()) {
 			while (!c.isAfterLast()) {
-				String name = c.getString(c
-						.getColumnIndex(EventHelper.KEY_NAME));
+				String name = c.getString(c.getColumnIndex(EventHelper.KEY_NAME));
 				Date date = null;
 				String d = c.getString(c.getColumnIndex(EventHelper.KEY_DATE));
 				long id = c.getLong(c.getColumnIndex(EventHelper.KEY_ROWID));
@@ -73,14 +72,12 @@ public class CelebrateList extends ListActivity {
 		List<Map<String, String>> data = new ArrayList<Map<String, String>>();
 		for (Celebrate cx : feasts) {
 			Map<String, String> values = new HashMap<String, String>();
-			values.put("reason", cx.getReason() + " : "
-					+ cx.getEvent().getName());
+			values.put("reason", cx.getReason() + " : " + cx.getEvent().getName());
 			values.put("date", sdf.format(cx.getDate()));
 			data.add(values);
 		}
-		setListAdapter(new SimpleAdapter(this, data, R.layout.celebrate_item,
-				new String[] { "reason", "date" }, new int[] { R.id.reason,
-						R.id.cdate }));
+		setListAdapter(new SimpleAdapter(this, data, R.layout.celebrate_item, new String[] { "reason", "date" },
+				new int[] { R.id.reason, R.id.cdate }));
 
 	}
 
@@ -88,6 +85,7 @@ public class CelebrateList extends ListActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		menu.add(0, EVENT_LIST, 0, "Events");
+		menu.add(0, TEST_NOTIFY, 1, "Notify");
 		return true;
 	}
 
@@ -97,25 +95,29 @@ public class CelebrateList extends ListActivity {
 		case EVENT_LIST:
 			startActivityForResult(new Intent(this, EventList.class), 0);
 			return true;
+		case TEST_NOTIFY:
+			Intent active = new Intent(this, NotifyService.class);
+			startService(active);
+			return true;
+
 		}
+
 		return super.onMenuItemSelected(featureId, item);
 	}
 
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode,
-			Intent intent) {
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
 		fillData();
 	}
-	
+
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 		Intent i = new Intent(this, EventView.class);
-		Log.i("Celebrate","Getting "+feasts.get(position).getEvent().getId());
+		Log.i("Celebrate", "Getting " + feasts.get(position).getEvent().getId());
 		i.putExtra(EventHelper.KEY_ROWID, feasts.get(position).getEvent().getId());
 		startActivityForResult(i, ACTIVITY_EDIT);
 	}
-
 
 }

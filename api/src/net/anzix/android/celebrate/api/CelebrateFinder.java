@@ -54,7 +54,6 @@ public class CelebrateFinder {
 		}
 		Collections.sort(result, new Comparator<Celebrate>(){
 
-			@Override
 			public int compare(Celebrate o1, Celebrate o2) {				
 				return o1.getDate().compareTo(o2.getDate());
 			}});
@@ -85,5 +84,7 @@ public class CelebrateFinder {
 			return (int) Math.ceil(month / 1000) * 1000;
 		}
 	}
+
+	
 
 }
