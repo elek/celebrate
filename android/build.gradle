@@ -1,0 +1,58 @@
+buildscript {
+  repositories {
+    mavenRepo(urls: 'http://jvoegele.com/maven2/')
+  }
+  dependencies {
+     classpath 'com.jvoegele.gradle.plugins:android-plugin:0.9.9'
+  }
+
+}
+
+apply plugin: 'project-report'
+apply plugin: 'android'
+
+
+
+
+dependencies {
+   compile project(':api')
+}
+   
+
+version = "1.0.0"
+
+def keyProps = new Properties()
+
+//create this file if you would like to use production keystore 
+keyFile = new File("/home/elek/.androidKey")
+if (keyFile.exists()) {
+   file(keyFile).withReader { reader ->     
+     keyProps.load(reader) 
+     properties.putAll(keyProps)
+   } 
+} else {
+   keyProps.put('store','devkeyring')
+   keyProps.put('storepwd','devdev')
+   keyProps.put('keypwd','devdev')
+}
+
+println keyProps.get('key')
+
+androidPackage {
+	keyStore = keyProps.get('store')
+	keyAlias = 'android'
+	keyStorePassword = keyProps.get('storepwd')
+	keyAliasPassword = keyProps.get('keypwd')
+}
+// Configure the filtering of resources with properties from the Gradle's project scope (2)
+processResources {
+	expand (project.properties)
+}
+
+task configureDebug << {
+    jar.classifier = "debug"
+}
+
+task configureRelease << {
+    proguard.enabled = true
+}

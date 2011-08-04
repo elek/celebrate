@@ -1,0 +1,17 @@
+subprojects {
+    group = 'net.anzix.android.celebrate'
+    version = '1.0'
+    repositories {
+        mavenCentral()
+    }
+
+sourceSets {
+  main {
+    java {
+      srcDir 'src'
+    }
+  }
+}    
+}
+
+dependsOnChildren()
