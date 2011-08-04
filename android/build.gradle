@@ -10,9 +10,15 @@ buildscript {
 
 apply plugin: 'project-report'
 apply plugin: 'android'
+apply plugin: 'eclipse'
 
-
-
+sourceSets {
+  main {
+    java {
+      srcDir 'src'
+    }
+  }
+}    
 
 dependencies {
    compile project(':api')

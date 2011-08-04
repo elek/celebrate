@@ -5,13 +5,7 @@ subprojects {
         mavenCentral()
     }
 
-sourceSets {
-  main {
-    java {
-      srcDir 'src'
-    }
-  }
-}    
+
 }
 
 dependsOnChildren()
