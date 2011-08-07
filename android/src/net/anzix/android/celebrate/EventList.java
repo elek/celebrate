@@ -1,5 +1,13 @@
 package net.anzix.android.celebrate;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -8,6 +16,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -19,16 +28,21 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
 public class EventList extends ListActivity {
 	private static final int ACTIVITY_EDIT = 1;
 	private EventAdapter db;
 	protected String currentName;
 	private static final int INSERT_ID = Menu.FIRST;
-	private static final int DELETE_ID = 3;
-	private static final int DELETE_ALL = 2;
+
 	private static final int DATE_DIALOG_ID = 0;
 	private static final int NAME_DIALOG_ID = 1;
+	private static final int DELETE_ALL = 2;
+	private static final int DELETE_ID = 3;
+	private static final int EXPORT_ID = 4;
+	private static final int IMPORT_ID = 5;
+	private File outputFile;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -58,11 +72,14 @@ public class EventList extends ListActivity {
 		super.onCreateOptionsMenu(menu);
 		menu.add(0, INSERT_ID, 0, "Add new");
 		menu.add(0, DELETE_ALL, 0, "Delete all");
+		menu.add(0, EXPORT_ID, 0, "Export");
+		menu.add(0, IMPORT_ID, 0, "Import");
 		return true;
 	}
 
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		String message;
 		switch (item.getItemId()) {
 		case INSERT_ID:
 			// Intent i = new Intent(this, EventForm.class);
@@ -74,6 +91,64 @@ public class EventList extends ListActivity {
 		case DELETE_ALL:
 			db.deleteAll();
 			fillData();
+			return true;
+		case IMPORT_ID:
+			File inputFile = new File(Environment.getExternalStorageDirectory(), "celebrate/export.csv");
+			if (!inputFile.exists()) {
+				Toast.makeText(this, "No such file " + inputFile.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+				return true;
+			}
+			try {
+				BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+				String line;
+				while ((line = reader.readLine()) != null) {
+					String[] parts = line.split(";");
+					if (parts.length != 2) {
+						message = "Invalid file format";
+					} else {
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+						sdf.parse(parts[1]);
+						db.createNote(parts[0], parts[1]);
+					}
+				}
+				reader.close();
+				fillData();
+				message = "Events are imported succesfully";
+			} catch (Exception e) {
+				message = "Export is failed. " + e.getMessage();
+				Log.e("celebrate", "Error on exporting", e);
+			}
+			Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+
+			return true;
+		case EXPORT_ID:
+			Cursor c = db.fetchAllEvent();
+			startManagingCursor(c);
+			c.moveToFirst();
+			try {
+				File outputFile = new File(Environment.getExternalStorageDirectory(), "celebrate/export.csv");
+				if (!outputFile.getParentFile().exists()) {
+					outputFile.getParentFile().mkdirs();
+				}
+				BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile));
+
+				do {
+					bw.write(c.getString(c.getColumnIndex(EventHelper.KEY_NAME)));
+					bw.write(";");
+					bw.write(c.getString(c.getColumnIndex(EventHelper.KEY_DATE)));
+					bw.write("\n");
+					if (!c.isLast()) {
+						c.moveToNext();
+					}
+
+				} while (!c.isLast());
+				bw.close();
+				message = "Events are exported to " + outputFile.getAbsolutePath();
+			} catch (IOException e) {
+				message = "Export is failed. " + e.getMessage();
+				Log.e("celebrate", "Error on exporting", e);
+			}
+			Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 			return true;
 		}
 
