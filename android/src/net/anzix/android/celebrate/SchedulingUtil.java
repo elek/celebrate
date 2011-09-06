@@ -23,7 +23,9 @@ public class SchedulingUtil {
 		cal.set(Calendar.HOUR, 0);
 		cal.set(Calendar.MINUTE, 0);
 		cal.set(Calendar.SECOND, 0);
-		alarms.setRepeating(AlarmManager.RTC, cal.getTimeInMillis(), 24 * 60 * 60 * 1000, newPending);
+		cal.set(Calendar.MILLISECOND, 0);
+		cal.add(Calendar.DAY_OF_YEAR, 1);
+		alarms.setRepeating(AlarmManager.RTC, cal.getTimeInMillis(), AlarmManager.INTERVAL_DAY, newPending);
 
 	}
 

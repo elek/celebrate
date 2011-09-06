@@ -38,7 +38,7 @@ public class CelebrateList extends ListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
-		//SchedulingUtil.schendule(this);
+		SchedulingUtil.schedule(this);
 		setContentView(R.layout.celebrate_list);
 		db = new EventAdapter(this);
 		db.open();
