@@ -1,12 +1,12 @@
 buildscript {
   repositories {
-    mavenRepo(urls: 'http://jvoegele.com/maven2/')
+     mavenCentral();
   }
   dependencies {
-     classpath 'com.jvoegele.gradle.plugins:android-plugin:0.9.9'
+     classpath 'org.gradle.api.plugins:gradle-android-plugin:1.2.1'
   }
-
 }
+
 
 apply plugin: 'project-report'
 apply plugin: 'android'
@@ -44,7 +44,7 @@ if (keyFile.exists()) {
 
 println keyProps.get('key')
 
-androidPackage {
+androidSignAndAlign {
 	keyStore = keyProps.get('store')
 	keyAlias = 'android'
 	keyStorePassword = keyProps.get('storepwd')
