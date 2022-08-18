@@ -69,7 +69,7 @@ func bar() error {
 		if t != "" {
 			t += "\n"
 		}
-		t += fmt.Sprintf("%s %s %d %s %d", a.Date.Format("2006-01-02"), a.Event.Name, a.Amount, a.Unit, a.Score)
+		t += fmt.Sprintf("%s %s %d %s", a.Date.Format("2006-01-02"), a.Event.Name, a.Amount, a.Unit)
 	}
 
 	remaining := int(anniversaries[0].Date.Sub(time.Now()).Hours() / 24)
