@@ -56,7 +56,7 @@ type timeAdd func(time.Time, int) time.Time
 
 func bar() error {
 
-	anniversaries, err := calculateAniversaries()
+	anniversaries, err := calculateAnniversaries()
 	if err != nil {
 		return err
 	}
@@ -90,7 +90,7 @@ func bar() error {
 }
 
 func run() error {
-	anniversaries, err := calculateAniversaries()
+	anniversaries, err := calculateAnniversaries()
 	if err != nil {
 		return err
 	}
@@ -104,7 +104,7 @@ func run() error {
 	return nil
 }
 
-func calculateAniversaries() ([]Anniversary, error) {
+func calculateAnniversaries() ([]Anniversary, error) {
 	configFile := os.Getenv("CELEBRATE_FILE")
 	if configFile == "" {
 		home, err := os.UserHomeDir()
@@ -135,7 +135,6 @@ func calculateAniversaries() ([]Anniversary, error) {
 
 func generateAnniversary(event Event) (res []Anniversary) {
 	today := time.Now().Truncate(time.Hour * 24)
-
 	res = append(res, createAnniversaries(today, event, dayDiff, dayAdd, "days")...)
 	res = append(res, createAnniversaries(today, event, monthDiff, monthAdd, "months")...)
 	res = append(res, createAnniversaries(today, event, yearDiff, yearAdd, "years")...)
